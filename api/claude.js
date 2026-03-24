@@ -1,15 +1,5 @@
 const GEMINI_API_KEY = process.env.GEMINI_KEY;
-
-export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models?key=${GEMINI_API_KEY}`
-  );
-  const data = await response.json();
-  return res.status(200).json(data);
-}
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent?key=${GEMINI_API_KEY}`;
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
 
 const PROMPT = `Eres un asistente de taller de vehículos de limpieza pública. Analiza este formulario de solicitud de reparación y extrae los datos en JSON puro sin markdown.
 Devuelve SOLO este JSON:
@@ -23,7 +13,7 @@ Devuelve SOLO este JSON:
 }
 Si no encuentras algún dato, usa cadena vacía "".`;
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
@@ -64,4 +54,4 @@ export default async function handler(req, res) {
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
-}
+};
