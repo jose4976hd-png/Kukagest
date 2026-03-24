@@ -1,5 +1,5 @@
 const GEMINI_API_KEY = process.env.GEMINI_KEY;
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent?key=${GEMINI_API_KEY}`;
 
 const PROMPT = `Eres un asistente de taller de vehículos de limpieza pública. Analiza este formulario de solicitud de reparación y extrae los datos en JSON puro sin markdown.
 Devuelve SOLO este JSON:
