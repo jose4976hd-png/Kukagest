@@ -1,7 +1,7 @@
 const GEMINI_API_KEY = process.env.GEMINI_KEY;
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+const GEMINI_URL = https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY};
 
-const PROMPT = `Eres un asistente de taller de vehículos de limpieza pública. Analiza este formulario de solicitud de reparación y extrae los datos en JSON puro sin markdown.
+const PROMPT = Eres un asistente de taller de vehículos de limpieza pública. Analiza este formulario de solicitud de reparación y extrae los datos en JSON puro sin markdown.
 Devuelve SOLO este JSON:
 {
   "matricula": "matrícula del vehículo (solo letras y números, sin guiones)",
@@ -11,7 +11,7 @@ Devuelve SOLO este JSON:
   "prioridad": "normal|urgente|alta|baja según lo que indique el formulario",
   "ubicacion": "ubicación del vehículo si aparece"
 }
-Si no encuentras algún dato, usa cadena vacía "".`;
+Si no encuentras algún dato, usa cadena vacía "".;
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
