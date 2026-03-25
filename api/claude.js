@@ -23,7 +23,7 @@ module.exports = async function handler(req, res) {
         'X-Title': 'Kukagest'
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.0-flash-lite:free',
+        model: 'google/gemma-3-27b-it:free',
         messages: [{
           role: 'user',
           content: [
