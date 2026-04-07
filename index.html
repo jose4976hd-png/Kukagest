@@ -1,0 +1,711 @@
+<!-- ── ECARR SECTION COMPLETAMENTE RENOVADO ── -->
+<div class="page" id="page-ecarr" style="padding:0;background:#0a1f2a">
+
+  <!-- CABECERA FIJA -->
+  <div style="background:#0a1f2a;border-bottom:2px solid #1a4f62;padding:10px 14px;position:sticky;top:0;z-index:50">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div>
+        <div style="font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;color:#7dc520;letter-spacing:1px">⚡ PANEL AVERÍAS</div>
+        <div style="font-size:9px;color:#3a7080;letter-spacing:2px;text-transform:uppercase">GESTIÓN DE REPARACIONES</div>
+      </div>
+      <button onclick="ecNuevoParte()" style="background:#7dc520;color:#000;border:none;border-radius:8px;padding:8px 18px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;cursor:pointer">+ PARTE</button>
+    </div>
+    <!-- Botones nav -->
+    <div style="display:flex;gap:6px;margin-bottom:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px">
+      <button class="ec-navbtn" id="ec-btn-hoy" onclick="ecVista('hoy',this)" style="background:#7dc520;color:#000;border-color:#7dc520">📅 HOY</button>
+      <button class="ec-navbtn" id="ec-btn-pendiente" onclick="ecVista('pendiente',this)">📋 PENDIENTE</button>
+      <button class="ec-navbtn" id="ec-btn-todos" onclick="ecVista('todos',this)">📊 TODOS</button>
+      <button class="ec-navbtn" onclick="ecBlink()" style="color:#7dc520;border-color:rgba(125,197,32,.5)">⚡ BLINK</button>
+      <button class="ec-navbtn" onclick="ecAlmacen()">🔩 ALMACÉN</button>
+      <button class="ec-navbtn" onclick="window.open('https://script.google.com/macros/s/AKfycbzESKFRjU_j5V1ltvr-l1QzgFCL61D0fDQ12x5agVbZRWnulbhhUkP2LOzZRMS9gRym/exec?page=tecnico','_blank')">⚡ ESQUEMA</button>
+    </div>
+    <!-- Stats -->
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);background:#0d3040;border-radius:8px;overflow:hidden;margin-bottom:10px;border:1px solid #1a4f62">
+      <div style="padding:7px 4px;text-align:center;border-right:1px solid #1a4f62"><div id="ec-s-total" class="ec-stat-num" style="color:#d8eef0">—</div><div class="ec-stat-lbl">TOTAL</div></div>
+      <div style="padding:7px 4px;text-align:center;border-right:1px solid #1a4f62"><div id="ec-s-pend" class="ec-stat-num" style="color:#e05050">—</div><div class="ec-stat-lbl">PENDIENTE</div></div>
+      <div style="padding:7px 4px;text-align:center;border-right:1px solid #1a4f62"><div id="ec-s-leve" class="ec-stat-num" style="color:#f0c040">—</div><div class="ec-stat-lbl">LEVE</div></div>
+      <div style="padding:7px 4px;text-align:center;border-right:1px solid #1a4f62"><div id="ec-s-rep" class="ec-stat-num" style="color:#f08030">—</div><div class="ec-stat-lbl">REPARANDO</div></div>
+      <div style="padding:7px 4px;text-align:center"><div id="ec-s-op" class="ec-stat-num" style="color:#7dc520">—</div><div class="ec-stat-lbl">OPERATIVO</div></div>
+    </div>
+    <!-- Buscador + filtros -->
+    <div style="display:flex;gap:8px;margin-bottom:8px">
+      <input type="text" id="ec-buscar" placeholder="Buscar carro, cantón..." oninput="ecRender()" class="ec-input" style="flex:1;padding:8px 12px;font-size:14px">
+      <button onclick="ecCargar()" style="background:#0d3040;border:1px solid #1a4f62;border-radius:8px;padding:8px 12px;color:#7ab0b8;cursor:pointer;font-size:16px">↻</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <button id="ec-f-todos" onclick="ecFiltro('todos',this)" style="padding:4px 12px;border-radius:20px;border:1px solid #7dc520;background:#7dc520;color:#000;font-size:11px;font-weight:700;cursor:pointer">TODOS</button>
+      <button onclick="ecFiltro('pendiente',this)" style="width:26px;height:26px;border-radius:50%;border:2px solid #e05050;background:#e05050;cursor:pointer" title="Pendiente revisar"></button>
+      <button onclick="ecFiltro('leve',this)" style="width:26px;height:26px;border-radius:50%;border:2px solid #f0c040;background:#f0c040;cursor:pointer" title="Leve"></button>
+      <button onclick="ecFiltro('reparando',this)" style="width:26px;height:26px;border-radius:50%;border:2px solid #f08030;background:#f08030;cursor:pointer" title="Reparando"></button>
+      <button onclick="ecFiltro('operativo',this)" style="width:26px;height:26px;border-radius:50%;border:2px solid #7dc520;background:#7dc520;cursor:pointer" title="Operativo"></button>
+      <select id="ec-f-rep" onchange="ecRender()" style="background:#0d3040;border:1px solid #1a4f62;border-radius:8px;padding:4px 8px;color:#7ab0b8;font-size:11px;cursor:pointer;outline:none">
+        <option value="">🔩 REPUESTO: Todos</option>
+        <option>Relé</option><option>Micro</option><option>Potenciómetro</option>
+        <option>Muelle</option><option>LCD</option><option>Soportes motor</option>
+        <option>Cable cargador</option><option>Cargador</option><option>Batería</option>
+        <option>Motor</option><option>Freno motor</option><option>Rueda</option>
+        <option>Chasis</option><option>Rotativo</option><option>Gomas</option>
+      </select>
+    </div>
+  </div>
+  <div id="ec-contador" style="padding:8px 14px 4px;font-size:11px;font-weight:700;color:#3a7080;letter-spacing:1px"></div>
+  <div id="ec-lista" style="padding:0 10px 100px">
+    <div style="display:flex;align-items:center;justify-content:center;gap:10px;padding:48px;color:#3a7080"><div class="spinner"></div></div>
+  </div>
+</div>
+
+<!-- MODAL NUEVO PARTE ECARR -->
+<div class="modal-overlay" id="modal-ec-nuevo">
+  <div class="modal-panel" style="width:min(640px,100vw);background:#0a1f2a">
+    <div class="modal-header" style="background:#0a1f2a;border-bottom:1px solid #1a4f62">
+      <button class="btn-close" onclick="closeModal('modal-ec-nuevo')">✕</button>
+      <div class="modal-title" style="color:#7dc520">Nuevo parte — Ecarr</div>
+    </div>
+    <div class="modal-body">
+      <span class="ec-lbl">CARRO Nº *</span>
+      <div style="position:relative;margin-bottom:14px">
+        <input type="text" id="ec-n-search" placeholder="Número del carro (203–317)..." oninput="ecBuscarCarroNuevo(this.value)" autocomplete="off" class="ec-input">
+        <div id="ec-n-dropdown" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:300;background:#0d3040;border:1px solid #206070;border-radius:0 0 8px 8px;max-height:220px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.5)"></div>
+        <div id="ec-n-sel" style="display:none;margin-top:6px;padding:8px 12px;background:rgba(125,197,32,.1);border:1px solid rgba(125,197,32,.3);border-radius:8px;font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;color:#7dc520"></div>
+        <input type="hidden" id="ec-n-id">
+      </div>
+      <span class="ec-lbl">CANTÓN</span>
+      <input type="text" id="ec-n-canton" placeholder="Auto-rellenado al elegir carro" class="ec-input" style="margin-bottom:14px">
+      <span class="ec-lbl">TIPO DE AVERÍA * (selecciona uno o varios)</span>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px" id="ec-n-tipos"></div>
+      <span class="ec-lbl">NOTAS</span>
+      <textarea id="ec-n-notas" placeholder="Descripción adicional..." class="ec-input" style="min-height:70px;resize:none;margin-bottom:14px"></textarea>
+      <button onclick="ecGuardarNuevo()" style="width:100%;background:#7dc520;color:#000;border:none;border-radius:8px;padding:14px;font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;cursor:pointer">GUARDAR PARTE</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DETALLE PARTE ECARR (con historial completo) -->
+<div class="modal-overlay" id="modal-ec-det">
+  <div class="modal-panel" style="width:min(700px,100vw);background:#0a1f2a">
+    <div class="modal-header" style="background:#0a1f2a;border-bottom:1px solid #1a4f62;flex-wrap:wrap;gap:8px">
+      <button class="btn-close" onclick="closeModal('modal-ec-det')">✕</button>
+      <div style="flex:1;min-width:120px">
+        <div class="modal-title" id="ec-d-num" style="color:#7dc520">Parte #—</div>
+        <div style="font-size:11px;color:#7ab0b8" id="ec-d-sub">—</div>
+      </div>
+      <div style="display:flex;gap:4px">
+        <button onclick="ecDetTab('parte')" id="ec-tab-parte-btn" style="padding:5px 12px;border-radius:6px;border:1px solid #7dc520;background:#7dc520;color:#000;font-size:11px;font-weight:700;cursor:pointer">📋 PARTE</button>
+        <button onclick="ecDetTab('hist')" id="ec-tab-hist-btn" style="padding:5px 12px;border-radius:6px;border:1px solid #1a4f62;background:#0d3040;color:#7ab0b8;font-size:11px;font-weight:700;cursor:pointer">🕐 HISTORIAL</button>
+      </div>
+    </div>
+    <div class="modal-body" style="padding:0">
+      <!-- TAB PARTE -->
+      <div id="ec-tab-parte" style="padding:14px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;border:1px solid #1a4f62;border-radius:8px;overflow:hidden;margin-bottom:14px">
+          <div style="padding:8px 10px;border-right:1px solid #1a4f62;border-bottom:1px solid #1a4f62"><div style="font-size:9px;color:#3a7080">FECHA</div><div id="ec-d-fecha" style="font-size:13px;font-weight:600;color:#d8eef0">—</div></div>
+          <div style="padding:8px 10px;border-bottom:1px solid #1a4f62"><div style="font-size:9px;color:#3a7080">CARRO</div><div id="ec-d-carro" style="font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:#7dc520">—</div></div>
+          <div style="padding:8px 10px;border-right:1px solid #1a4f62"><div style="font-size:9px;color:#3a7080">CANTÓN</div><div id="ec-d-canton" style="font-size:13px;font-weight:600;color:#d8eef0">—</div></div>
+          <div style="padding:8px 10px"><div style="font-size:9px;color:#3a7080">AVERÍAS</div><div id="ec-d-averias" style="display:flex;flex-wrap:wrap;gap:3px;margin-top:3px"></div></div>
+        </div>
+        <!-- Estado 4 botones -->
+        <div style="font-size:10px;font-weight:700;color:#7dc520;letter-spacing:1px;margin-bottom:6px">ESTADO</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:14px">
+          <button onclick="ecCambiarEstado('pendiente_revision')" id="ec-est-pendiente_revision" class="ec-est-btn" style="border-color:#e05050;color:#e05050"><div style="width:8px;height:8px;border-radius:50%;background:#e05050;margin:0 auto 3px"></div>PENDIENTE REVISAR</button>
+          <button onclick="ecCambiarEstado('averia_leve')" id="ec-est-averia_leve" class="ec-est-btn" style="border-color:#f0c040;color:#f0c040"><div style="width:8px;height:8px;border-radius:50%;background:#f0c040;margin:0 auto 3px"></div>LEVE</button>
+          <button onclick="ecCambiarEstado('en_reparacion')" id="ec-est-en_reparacion" class="ec-est-btn" style="border-color:#f08030;color:#f08030"><div style="width:8px;height:8px;border-radius:50%;background:#f08030;margin:0 auto 3px"></div>REPARANDO</button>
+          <button onclick="ecCambiarEstado('operativo')" id="ec-est-operativo" class="ec-est-btn" style="border-color:#7dc520;color:#7dc520"><div style="width:8px;height:8px;border-radius:50%;background:#7dc520;margin:0 auto 3px"></div>OPERATIVO</button>
+        </div>
+        <button onclick="ecNotaPendiente()" style="width:100%;background:rgba(125,197,32,.08);border:1px solid rgba(125,197,32,.3);border-radius:8px;padding:10px;color:#7dc520;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:14px">📋 + NOTA PENDIENTE</button>
+        <div style="font-size:10px;font-weight:700;color:#7dc520;letter-spacing:1px;margin-bottom:6px">TIPO AVERÍA DIAGNOSTICADA <span style="color:#3a7080">(VARIOS)</span></div>
+        <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px" id="ec-d-diag"></div>
+        <button onclick="ecBlink()" style="width:100%;background:rgba(240,128,48,.08);border:1px solid rgba(240,128,48,.3);border-radius:8px;padding:10px 14px;color:#f08030;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center"><span>⚡ CONSULTAR BLINK CODE</span><span style="font-size:11px;opacity:.6">1.1 · 2.3 · ...</span></button>
+        <div style="font-size:10px;font-weight:700;color:#7dc520;letter-spacing:1px;margin-bottom:6px">REPUESTOS MONTADOS</div>
+        <div id="ec-d-reps" style="font-size:12px;color:#3a7080;font-style:italic;margin-bottom:8px">Sin repuestos añadidos</div>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px">
+          <select id="ec-d-rep-sel" class="ec-input" style="flex:1;padding:8px 10px;font-size:14px"><option value="">— Seleccionar —</option><option>Relé</option><option>Micro</option><option>Potenciómetro</option><option>Muelle</option><option>LCD</option><option>Soportes motor</option><option>Cable cargador</option><option>Cargador</option><option>Batería</option><option>Motor</option><option>Freno motor</option><option>Rueda</option><option>Chasis</option><option>Rotativo</option><option>Gomas</option><option>Seta</option><option>Clausor</option><option>Instalación motor</option><option>Instalación controladora</option><option>Otros</option></select>
+          <button onclick="ecRepQty(-1)" style="background:#0d3040;border:1px solid #1a4f62;border-radius:6px;width:32px;height:36px;color:#d8eef0;cursor:pointer;font-size:18px">−</button>
+          <span id="ec-d-rep-qty" style="font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;min-width:24px;text-align:center;color:#d8eef0">1</span>
+          <button onclick="ecRepQty(1)" style="background:#0d3040;border:1px solid #1a4f62;border-radius:6px;width:32px;height:36px;color:#d8eef0;cursor:pointer;font-size:18px">+</button>
+          <button onclick="ecAñadirRep()" style="background:#7dc520;border:none;border-radius:8px;padding:8px 14px;color:#000;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;cursor:pointer">+ AÑADIR</button>
+        </div>
+        <div style="font-size:10px;font-weight:700;color:#7dc520;letter-spacing:1px;margin-bottom:6px">NOTAS DE REPARACIÓN</div>
+        <textarea id="ec-d-notas" placeholder="Notas de reparación..." class="ec-input" style="min-height:70px;resize:none;margin-bottom:14px"></textarea>
+        <div style="font-size:10px;font-weight:700;color:#7dc520;letter-spacing:1px;margin-bottom:6px">FOTOS DEL TÉCNICO</div>
+        <label style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;border-radius:8px;border:1.5px dashed #206070;background:#0d3040;cursor:pointer;color:#7ab0b8;font-size:13px;margin-bottom:8px">📷 AÑADIR FOTOS<input type="file" accept="image/*" multiple style="display:none" onchange="ecSubirFotosDet(this)"></label>
+        <div id="ec-d-fotos" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px"></div>
+        <button onclick="ecDetGuardar()" style="width:100%;background:#7dc520;color:#000;border:none;border-radius:8px;padding:14px;font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;cursor:pointer;margin-bottom:10px">GUARDAR</button>
+        <button onclick="ecEliminar()" style="width:100%;background:rgba(224,80,80,.1);border:1px solid rgba(224,80,80,.3);border-radius:8px;padding:10px;color:#e05050;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;cursor:pointer">🗑 ELIMINAR PARTE</button>
+      </div>
+      <!-- TAB HISTORIAL COMPLETO -->
+      <div id="ec-tab-hist" style="display:none;padding:14px">
+        <div style="font-size:11px;font-weight:700;color:#7dc520;letter-spacing:1px;margin-bottom:10px">📜 HISTORIAL COMPLETO DEL CARRO</div>
+        <div id="ec-d-hist"><div style="text-align:center;padding:32px;color:#3a7080"><div class="spinner" style="margin:0 auto 8px"></div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL BLINK CODES -->
+<div class="modal-overlay" id="modal-ec-blink">
+  <div class="modal-panel" style="width:min(560px,100vw);background:#0a1f2a">
+    <div class="modal-header" style="background:#0a1f2a;border-bottom:1px solid #1a4f62">
+      <button class="btn-close" onclick="closeModal('modal-ec-blink')">✕</button>
+      <div class="modal-title">⚡ Códigos de parpadeo — Ecarr</div>
+    </div>
+    <div class="modal-body">
+      <input type="text" id="ec-blink-search" placeholder="Buscar código o descripción..." oninput="ecBlinkFiltrar(this.value)" class="ec-input" style="margin-bottom:14px">
+      <div id="ec-blink-lista"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ALMACÉN ECARR -->
+<div class="modal-overlay" id="modal-ec-alm">
+  <div class="modal-panel" style="width:min(600px,100vw);background:#0a1f2a">
+    <div class="modal-header" style="background:#0a1f2a;border-bottom:1px solid #1a4f62">
+      <button class="btn-close" onclick="closeModal('modal-ec-alm')">✕</button>
+      <div class="modal-title">🔩 Almacén Ecarr</div>
+    </div>
+    <div class="modal-body" style="padding:12px">
+      <input type="text" id="ec-alm-search" placeholder="Buscar repuesto..." oninput="ecAlmRender()" class="ec-input" style="margin-bottom:12px">
+      <div id="ec-alm-lista"><div style="text-align:center;padding:32px;color:#3a7080"><div class="spinner" style="margin:0 auto 8px"></div></div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// MÓDULO ECARR COMPLETO (igual al GAS)
+// ============================================================
+
+const EC_TIPOS = [
+  'NO ENCIENDE','NO SE MUEVE','NO CARGA','SIN FUERZA',
+  'SE MUEVE SOLO','SOLO AVANZA','SOLO RETROCEDE',
+  'NO SE QUEDA FRENADO','NO SE PUEDE GIRAR',
+  'SOPORTES DE CEPILLOS','LUCES','OTROS'
+];
+
+const EC_DIAG = [
+  'Relé','Instalación controladora','Instalación mandos','Instalación motor',
+  'Otros cables','Micro','Potenciómetro','LCD','Cargador','Cable cargador',
+  'Sin batería','Batería','Rueda','Motor','Freno motor','Chasis','Soportes','Otros'
+];
+
+const EC_BLINK = [
+  {c:'1-1',d:'Error controladora — reset general',s:'Apagar/encender. Revisar conexiones controladora.'},
+  {c:'1-2',d:'Sobrecorriente en motor',s:'Revisar motor y cables. Posible cortocircuito.'},
+  {c:'1-3',d:'Batería baja',s:'Cargar batería. Revisar cargador y cable.'},
+  {c:'2-1',d:'Error potenciómetro',s:'Revisar potenciómetro y conexiones.'},
+  {c:'2-2',d:'Fallo micro de marcha',s:'Revisar y ajustar micros. Cambiar si defectuosos.'},
+  {c:'2-3',d:'Error freno motor',s:'Revisar freno motor. Cambiar si está bloqueado.'},
+  {c:'3-1',d:'Temperatura elevada',s:'Dejar enfriar. Revisar ventilación y carga.'},
+  {c:'3-2',d:'Error relé principal',s:'Cambiar relé. Revisar soldaduras.'},
+  {c:'3-3',d:'Fallo instalación eléctrica',s:'Revisar cableado completo, buscar cortes o cortocircuitos.'},
+  {c:'4-1',d:'Error LCD / pantalla',s:'Revisar conector LCD. Cambiar pantalla.'},
+  {c:'4-2',d:'Error cargador interno',s:'Revisar cable cargador y conector.'},
+  {c:'4-3',d:'Fallo GPS',s:'Revisar antena y conexión GPS.'},
+  {c:'5-1',d:'Motor bloqueado',s:'Revisar cuerpos extraños. Revisar rodamientos.'},
+  {c:'5-2',d:'Error seta emergencia',s:'Verificar seta no presionada. Limpiar contactos.'},
+  {c:'5-3',d:'Fallo general — diagnóstico necesario',s:'Usar polímetro. Contactar taller.'},
+];
+
+// Estado del módulo
+var EC = {
+  partes: [], vehs: {}, modeloId: null,
+  vista: 'hoy', filtroEstado: 'todos',
+  parteActual: null, repQty: 1,
+  almacen: [],
+};
+
+// ── Init ──────────────────────────────────────────────────────
+async function loadEcarr() {
+  const wn = document.getElementById('ec-n-tipos');
+  if (wn && !wn.children.length) {
+    wn.innerHTML = EC_TIPOS.map(t => `<button class="ec-tipo-chip" onclick="ecChipToggle(this)" data-sel="0">${t}</button>`).join('');
+  }
+  const wd = document.getElementById('ec-d-diag');
+  if (wd && !wd.children.length) {
+    wd.innerHTML = EC_DIAG.map(t => `<button class="ec-diag-chip" onclick="ecChipToggle(this)" data-sel="0">${t}</button>`).join('');
+  }
+  await ecCargar();
+}
+
+async function ecGetModeloId() {
+  if (EC.modeloId) return EC.modeloId;
+  const { data } = await db.from('modelos_vehiculo').select('id').eq('marca','Ecarr').single();
+  if (data) EC.modeloId = data.id;
+  return EC.modeloId;
+}
+
+async function ecCargar() {
+  const lista = document.getElementById('ec-lista');
+  if (lista) lista.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;gap:10px;padding:48px;color:#3a7080"><div class="spinner"></div></div>';
+
+  try {
+    const mid = await ecGetModeloId();
+    if (!mid) throw new Error('Modelo Ecarr no encontrado.');
+
+    const { data: vehs } = await db.from('vehiculos')
+      .select('id,matricula,estado,notas,cantones(nombre)')
+      .eq('modelo_id', mid).eq('activo', true);
+
+    EC.vehs = {};
+    (vehs||[]).forEach(v => { EC.vehs[v.id] = v; });
+    const vIds = Object.keys(EC.vehs);
+
+    const nOp   = (vehs||[]).filter(v=>v.estado==='operativo').length;
+    const nLeve = (vehs||[]).filter(v=>v.estado==='averia_leve').length;
+    const nRep  = (vehs||[]).filter(v=>v.estado==='en_reparacion').length;
+    const nPend = (vehs||[]).filter(v=>v.estado==='pendiente_revision').length;
+
+    document.getElementById('ec-s-total')?.setAttribute('textContent', (vehs||[]).length);
+    document.getElementById('ec-s-pend')?.setAttribute('textContent', nPend);
+    document.getElementById('ec-s-leve')?.setAttribute('textContent', nLeve);
+    document.getElementById('ec-s-rep')?.setAttribute('textContent', nRep);
+    document.getElementById('ec-s-op')?.setAttribute('textContent', nOp);
+    // Fallback textContent
+    document.getElementById('ec-s-total') && (document.getElementById('ec-s-total').textContent = (vehs||[]).length);
+    document.getElementById('ec-s-pend') && (document.getElementById('ec-s-pend').textContent = nPend);
+    document.getElementById('ec-s-leve') && (document.getElementById('ec-s-leve').textContent = nLeve);
+    document.getElementById('ec-s-rep') && (document.getElementById('ec-s-rep').textContent = nRep);
+    document.getElementById('ec-s-op') && (document.getElementById('ec-s-op').textContent = nOp);
+
+    const bm = document.getElementById('ecarr-badge-mobile');
+    if (bm) { bm.textContent = nPend+nRep; bm.style.display = (nPend+nRep)>0?'flex':'none'; }
+    const bs = document.getElementById('ecarr-badge');
+    if (bs) { bs.textContent = nPend+nRep; bs.style.display = (nPend+nRep)>0?'inline-block':'none'; }
+
+    if (!vIds.length) { EC.partes = []; ecRender(); return; }
+    const { data: partes } = await db.from('partes_averia')
+      .select('id,numero_parte,titulo,descripcion,canton,estado,created_at,vehiculo_id,notas_mecanico,tipo_diag,fotos_reparacion,fuente')
+      .in('vehiculo_id', vIds)
+      .not('estado','in','("cerrado","cancelado")')
+      .order('created_at',{ascending:false});
+
+    EC.partes = partes||[];
+    ecRender();
+
+  } catch(e) {
+    const lista = document.getElementById('ec-lista');
+    if (lista) lista.innerHTML = `<div style="padding:24px;color:#e05050;font-size:13px">⚠️ ${e.message}</div>`;
+    console.error(e);
+  }
+}
+
+function ecVista(v, btn) {
+  EC.vista = v;
+  ['hoy','pendiente','todos'].forEach(id => {
+    const b = document.getElementById('ec-btn-'+id);
+    if (!b) return;
+    if (id===v) { b.style.background='#7dc520'; b.style.color='#000'; b.style.borderColor='#7dc520'; }
+    else        { b.style.background='#0d3040'; b.style.color='#7ab0b8'; b.style.borderColor='#1a4f62'; }
+  });
+  ecRender();
+}
+
+function ecFiltro(f, btn) {
+  EC.filtroEstado = f;
+  ecRender();
+}
+
+function ecRender() {
+  const lista = document.getElementById('ec-lista');
+  const ctr   = document.getElementById('ec-contador');
+  const q     = (document.getElementById('ec-buscar')?.value||'').toLowerCase().trim();
+  const repF  = (document.getElementById('ec-f-rep')?.value||'').toLowerCase();
+  const hoy   = new Date().toISOString().split('T')[0];
+
+  let partes = EC.partes.slice();
+
+  if (EC.vista==='hoy')       partes = partes.filter(p=>p.created_at.startsWith(hoy));
+  else if (EC.vista==='pendiente') partes = partes.filter(p=>['abierto','cerrado_pendiente'].includes(p.estado));
+
+  if (EC.filtroEstado!=='todos') {
+    const map={pendiente:'pendiente_revision',leve:'averia_leve',reparando:'en_reparacion',operativo:'operativo'};
+    partes = partes.filter(p=>(EC.vehs[p.vehiculo_id]||{}).estado===map[EC.filtroEstado]);
+  }
+
+  if (q) partes = partes.filter(p=>{
+    const v=EC.vehs[p.vehiculo_id]||{};
+    return (v.matricula||'').includes(q)||(v.cantones?.nombre||p.canton||'').toLowerCase().includes(q)||(p.titulo||'').toLowerCase().includes(q);
+  });
+
+  if (repF) partes = partes.filter(p=>
+    (p.titulo||'').toLowerCase().includes(repF)||(p.notas_mecanico||'').toLowerCase().includes(repF)
+  );
+
+  if (ctr) ctr.textContent = partes.length + ' PARTE'+(partes.length!==1?'S':'');
+
+  if (!lista) return;
+  if (!partes.length) {
+    lista.innerHTML = '<div style="text-align:center;padding:48px;color:#3a7080"><div style="font-size:40px;margin-bottom:12px">✅</div><div style="font-size:14px;color:#7ab0b8">'+(EC.vista==='hoy'?'Sin partes hoy':'Sin partes con estos filtros')+'</div></div>';
+    return;
+  }
+
+  lista.innerHTML = partes.map(p=>{
+    const v  = EC.vehs[p.vehiculo_id]||{};
+    const mat= v.matricula||'???';
+    const can= (v.cantones?.nombre||p.canton||'—').toUpperCase();
+    const ev = v.estado||'pendiente_revision';
+    const bc = {pendiente_revision:'#e05050',averia_leve:'#f0c040',en_reparacion:'#f08030',operativo:'#7dc520'}[ev]||'#f08030';
+    const el = {abierto:'PENDIENTE',asignado:'ASIGNADO',en_curso:'REPARANDO',cerrado_pendiente:'VALIDAR'}[p.estado]||p.estado.toUpperCase();
+    const ecColor = {abierto:'#e05050',asignado:'#40a8c0',en_curso:'#f08030',cerrado_pendiente:'#f0c040'}[p.estado]||'#f08030';
+    const fecha = new Date(p.created_at).toLocaleDateString('es-ES',{day:'numeric',month:'short',year:'numeric'});
+    const tit = (p.titulo||'').toUpperCase().replace(/\|/g,' · ');
+    const chips = EC_TIPOS.filter(t=>(p.titulo||'').toUpperCase().includes(t))
+      .slice(0,5).map(t=>`<span style="background:#133a4a;border:1px solid #1a4f62;border-radius:4px;padding:2px 8px;font-size:10px;font-weight:700;color:#7ab0b8">${t}</span>`).join('');
+    return `<div class="ec-tarjeta" style="border-left-color:${bc}" onclick="ecAbrirDetalle('${p.id}')">
+      <div style="display:flex;align-items:flex-start;gap:12px">
+        <div style="min-width:52px;height:52px;background:${bc};border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;color:#fff;flex-shrink:0;letter-spacing:1px">${mat}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:16px;font-weight:700;color:#d8eef0">${can}</div>
+          <div style="font-size:11px;color:#3a7080;margin-bottom:4px">${fecha}</div>
+          <div style="font-size:13px;font-weight:600;color:#7dc520;margin-bottom:6px;line-height:1.3">${tit}</div>
+          ${chips?`<div style="display:flex;flex-wrap:wrap;gap:4px">${chips}</div>`:''}
+        </div>
+        <div style="display:flex;align-items:center;gap:4px;background:rgba(0,0,0,.4);border-radius:20px;padding:4px 10px;flex-shrink:0">
+          <div style="width:7px;height:7px;border-radius:50%;background:${ecColor}"></div>
+          <span style="font-size:10px;font-weight:700;color:${ecColor}">${el}</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function ecChipToggle(btn) {
+  const sel = btn.getAttribute('data-sel') === '1';
+  btn.setAttribute('data-sel', sel ? '0' : '1');
+  btn.classList.toggle('seleccionado', !sel);
+}
+
+function ecNuevoParte() {
+  document.getElementById('ec-n-search').value = '';
+  document.getElementById('ec-n-id').value     = '';
+  document.getElementById('ec-n-canton').value = '';
+  document.getElementById('ec-n-notas').value  = '';
+  document.getElementById('ec-n-sel').style.display = 'none';
+  document.getElementById('ec-n-dropdown').style.display = 'none';
+  document.querySelectorAll('#ec-n-tipos .ec-tipo-chip').forEach(b=>{b.setAttribute('data-sel','0');b.classList.remove('seleccionado');});
+  openModal('modal-ec-nuevo');
+  setTimeout(()=>document.getElementById('ec-n-search')?.focus(),300);
+}
+
+function ecBuscarCarroNuevo(q) {
+  const dd = document.getElementById('ec-n-dropdown');
+  if (!q.trim()) { dd.style.display='none'; return; }
+  const lista = Object.values(EC.vehs).filter(v=>v.matricula.includes(q.trim())||(v.cantones?.nombre||'').toLowerCase().includes(q.toLowerCase())).slice(0,15);
+  if (!lista.length) { dd.style.display='none'; return; }
+  dd.innerHTML = lista.map(v=>`
+    <div onclick="ecSelCarro('${v.id}')" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid #133a4a;display:flex;align-items:center;gap:12px"
+      onmouseover="this.style.background='#133a4a'" onmouseout="this.style.background=''">
+      <span style="font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;color:#7dc520">${v.matricula}</span>
+      <span style="font-size:12px;color:#7ab0b8">${v.cantones?.nombre||'—'}</span>
+    </div>`).join('');
+  dd.style.display='block';
+}
+
+function ecSelCarro(id) {
+  const v = EC.vehs[id]; if (!v) return;
+  document.getElementById('ec-n-id').value     = id;
+  document.getElementById('ec-n-search').value = v.matricula;
+  document.getElementById('ec-n-canton').value = v.cantones?.nombre||'';
+  document.getElementById('ec-n-dropdown').style.display = 'none';
+  const sel = document.getElementById('ec-n-sel');
+  sel.textContent = `Nº ${v.matricula}  ·  ${v.cantones?.nombre||'—'}`;
+  sel.style.display = 'block';
+}
+
+document.addEventListener('click', e=>{
+  const dd = document.getElementById('ec-n-dropdown');
+  const inp= document.getElementById('ec-n-search');
+  if (dd&&inp&&!dd.contains(e.target)&&e.target!==inp) dd.style.display='none';
+});
+
+async function ecGuardarNuevo() {
+  const carroId= document.getElementById('ec-n-id').value;
+  const canton = document.getElementById('ec-n-canton').value.trim();
+  const notas  = document.getElementById('ec-n-notas').value.trim();
+  const tipos  = [...document.querySelectorAll('#ec-n-tipos .ec-tipo-chip[data-sel="1"]')].map(b=>b.textContent);
+  if (!carroId) { showToast('Selecciona un carro','error'); return; }
+  if (!tipos.length) { showToast('Selecciona al menos un tipo de avería','error'); return; }
+  const titulo = tipos.join(' | ');
+  const { data: parte, error } = await db.from('partes_averia').insert({
+    vehiculo_id: carroId, abierto_por: currentUser.id,
+    titulo, descripcion: notas||null, canton: canton||null,
+    estado: 'abierto', fuente: 'ecarr',
+    ubicacion_averia: 'taller',
+  }).select().single();
+  if (error) { showToast('Error: '+error.message,'error'); return; }
+  // Poner el carro en estado PENDIENTE REVISAR (ROJO)
+  await db.from('vehiculos').update({estado:'pendiente_revision',updated_at:new Date().toISOString()}).eq('id',carroId);
+  if (EC.vehs[carroId]) EC.vehs[carroId].estado = 'pendiente_revision';
+  showToast(`Parte #${parte.numero_parte} creado — Carro ${EC.vehs[carroId]?.matricula} (PENDIENTE REVISAR)`,'success');
+  closeModal('modal-ec-nuevo');
+  await ecCargar();
+}
+
+async function ecAbrirDetalle(parteId) {
+  const p = EC.partes.find(x=>x.id===parteId); if (!p) return;
+  EC.parteActual = p;
+  EC.repQty = 1;
+  const v = EC.vehs[p.vehiculo_id]||{};
+  const fecha = new Date(p.created_at).toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric'});
+
+  document.getElementById('ec-d-num').textContent  = `Parte #${p.numero_parte||'—'}`;
+  document.getElementById('ec-d-sub').textContent  = `${v.matricula||'???'} · ${v.cantones?.nombre||p.canton||'—'}`;
+  document.getElementById('ec-d-fecha').textContent= fecha;
+  document.getElementById('ec-d-carro').textContent= `Nº ${v.matricula||'???'}`;
+  document.getElementById('ec-d-canton').textContent=v.cantones?.nombre||p.canton||'—';
+  document.getElementById('ec-d-notas').value      = p.notas_mecanico||'';
+  document.getElementById('ec-d-rep-qty').textContent='1';
+
+  const tipos=(p.titulo||'').split(/[|·,]/).map(s=>s.trim()).filter(Boolean);
+  document.getElementById('ec-d-averias').innerHTML=tipos.map(t=>
+    `<span style="background:#133a4a;border:1px solid #1a4f62;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;color:#7ab0b8">${t}</span>`
+  ).join('');
+
+  const ev=v.estado||'pendiente_revision';
+  ['pendiente_revision','averia_leve','en_reparacion','operativo'].forEach(e=>{
+    const b=document.getElementById('ec-est-'+e);
+    if(b){b.classList.toggle('activo',e===ev);b.style.fontWeight=e===ev?'900':'700';}
+  });
+
+  const notasLow=(p.notas_mecanico||'').toLowerCase();
+  const tipoDiagArr=(p.tipo_diag||'').split('|').filter(Boolean).map(s=>s.toLowerCase());
+  document.querySelectorAll('#ec-d-diag .ec-diag-chip').forEach(b=>{
+    const t=b.textContent.toLowerCase();
+    const sel=tipoDiagArr.includes(t)||notasLow.includes(t);
+    b.setAttribute('data-sel',sel?'1':'0');
+    b.classList.toggle('seleccionado',sel);
+  });
+
+  const fotos=p.fotos_reparacion||[];
+  document.getElementById('ec-d-fotos').innerHTML=fotos.map(url=>
+    `<img src="${url}" style="width:64px;height:64px;object-fit:cover;border-radius:6px;border:1px solid #1a4f62;cursor:pointer" onclick="ecLightbox('${url}')">`
+  ).join('');
+
+  await ecCargarRepuestos();
+
+  ecDetTab('parte');
+  openModal('modal-ec-det');
+
+  // Cargar historial COMPLETO del vehículo
+  ecCargarHistorialCompleto(p.vehiculo_id);
+}
+
+function ecDetTab(tab) {
+  document.getElementById('ec-tab-parte').style.display = tab==='parte'?'block':'none';
+  document.getElementById('ec-tab-hist').style.display  = tab==='hist'?'block':'none';
+  const bp=document.getElementById('ec-tab-parte-btn');
+  const bh=document.getElementById('ec-tab-hist-btn');
+  if(bp){bp.style.background=tab==='parte'?'#7dc520':'#0d3040';bp.style.color=tab==='parte'?'#000':'#7ab0b8';bp.style.borderColor=tab==='parte'?'#7dc520':'#1a4f62';}
+  if(bh){bh.style.background=tab==='hist'?'#7dc520':'#0d3040';bh.style.color=tab==='hist'?'#000':'#7ab0b8';bh.style.borderColor=tab==='hist'?'#7dc520':'#1a4f62';}
+}
+
+async function ecCambiarEstado(nuevoEstado) {
+  if (!EC.parteActual) return;
+  await db.from('vehiculos').update({estado:nuevoEstado,updated_at:new Date().toISOString()}).eq('id',EC.parteActual.vehiculo_id);
+  if (EC.vehs[EC.parteActual.vehiculo_id]) EC.vehs[EC.parteActual.vehiculo_id].estado=nuevoEstado;
+  ['pendiente_revision','averia_leve','en_reparacion','operativo'].forEach(e=>{
+    const b=document.getElementById('ec-est-'+e);
+    if(b){b.classList.toggle('activo',e===nuevoEstado);b.style.fontWeight=e===nuevoEstado?'900':'700';}
+  });
+  if (nuevoEstado==='operativo') {
+    await db.from('partes_averia').update({estado:'cerrado_pendiente',fecha_cierre_mecanico:new Date().toISOString(),updated_at:new Date().toISOString()}).eq('id',EC.parteActual.id);
+    EC.parteActual.estado='cerrado_pendiente';
+  }
+  showToast('Estado actualizado','success');
+  ecRender();
+}
+
+async function ecCargarRepuestos() {
+  const p=EC.parteActual; if(!p) return;
+  const {data}=await db.from('repuestos_parte').select('*,repuestos(nombre)').eq('parte_id',p.id);
+  const el=document.getElementById('ec-d-reps');
+  if(!el) return;
+  if(!data?.length){el.innerHTML='<span style="font-size:12px;color:#3a7080;font-style:italic">Sin repuestos añadidos</span>';return;}
+  el.innerHTML=data.map(r=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid #133a4a">
+      <span style="font-size:13px;color:#d8eef0">🔩 ${r.nombre_libre||r.repuestos?.nombre||'—'}</span>
+      <span style="font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;color:#7dc520">×${r.cantidad}</span>
+    </div>`).join('');
+}
+
+function ecRepQty(d) {
+  EC.repQty=Math.max(1,(EC.repQty||1)+d);
+  const el=document.getElementById('ec-d-rep-qty');
+  if(el) el.textContent=EC.repQty;
+}
+
+async function ecAñadirRep() {
+  const nombre=document.getElementById('ec-d-rep-sel').value;
+  if(!nombre){showToast('Selecciona un repuesto','error');return;}
+  const p=EC.parteActual; if(!p) return;
+  const {data:rep}=await db.from('repuestos').select('id,nombre,stock_actual,stock_minimo').ilike('nombre','%'+nombre+'%').limit(1).single().catch(()=>({data:null}));
+  await db.from('repuestos_parte').insert({parte_id:p.id,repuesto_id:rep?.id||null,nombre_libre:rep?null:nombre,cantidad:EC.repQty});
+  if(rep){
+    const ns=(rep.stock_actual||0)-EC.repQty;
+    await db.from('repuestos').update({stock_actual:ns,updated_at:new Date().toISOString()}).eq('id',rep.id);
+  }
+  showToast(nombre+' añadido','success');
+  await ecCargarRepuestos();
+  document.getElementById('ec-d-rep-sel').value='';
+  EC.repQty=1;
+  const el=document.getElementById('ec-d-rep-qty');
+  if(el) el.textContent='1';
+}
+
+async function ecDetGuardar() {
+  const p=EC.parteActual; if(!p) return;
+  const notas=document.getElementById('ec-d-notas').value.trim();
+  const diags=[...document.querySelectorAll('#ec-d-diag .ec-diag-chip[data-sel="1"]')].map(b=>b.textContent);
+  await db.from('partes_averia').update({
+    notas_mecanico:notas||null,
+    tipo_diag:diags.length?diags.join('|'):null,
+    estado:p.estado==='abierto'?'en_curso':p.estado,
+    updated_at:new Date().toISOString()
+  }).eq('id',p.id);
+  showToast('Guardado','success');
+  await ecCargar();
+}
+
+async function ecSubirFotosDet(input) {
+  const files=Array.from(input.files);
+  const p=EC.parteActual; if(!p) return;
+  const grid=document.getElementById('ec-d-fotos');
+  for(const file of files){
+    const ruta=`ecarr/partes/${p.id}/${Date.now()}_${file.name.replace(/\s+/g,'_')}`;
+    const {error}=await db.storage.from('gmao-files').upload(ruta,file,{upsert:false});
+    if(error){showToast('Error subiendo foto','error');continue;}
+    const {data}=db.storage.from('gmao-files').getPublicUrl(ruta);
+    const actual=p.fotos_reparacion||[];
+    actual.push(data.publicUrl);
+    await db.from('partes_averia').update({fotos_reparacion:actual}).eq('id',p.id);
+    p.fotos_reparacion=actual;
+    if(grid) grid.innerHTML+=`<img src="${data.publicUrl}" style="width:64px;height:64px;object-fit:cover;border-radius:6px;border:1px solid #1a4f62;cursor:pointer" onclick="ecLightbox('${data.publicUrl}')">`;
+  }
+  input.value='';
+}
+
+function ecLightbox(url) {
+  const lb=document.getElementById('gmao-lightbox');
+  if(lb){document.getElementById('gmao-lightbox-img').src=url;lb.classList.add('show');}
+}
+
+function ecNotaPendiente() {
+  if(!EC.parteActual) return;
+  const v=EC.vehs[EC.parteActual.vehiculo_id]||{};
+  const nota=prompt(`Nota pendiente — Carro ${v.matricula||'???'}:`);
+  if(!nota?.trim()) return;
+  db.from('vehiculos').update({notas:nota.trim(),updated_at:new Date().toISOString()}).eq('id',EC.parteActual.vehiculo_id).catch(()=>{});
+  showToast('Nota guardada','success');
+}
+
+async function ecEliminar() {
+  if(!EC.parteActual) return;
+  if(!confirm('¿Eliminar este parte?')) return;
+  await db.from('partes_averia').update({estado:'cancelado',updated_at:new Date().toISOString()}).eq('id',EC.parteActual.id);
+  showToast('Parte eliminado','success');
+  closeModal('modal-ec-det');
+  await ecCargar();
+}
+
+// HISTORIAL COMPLETO DEL CARRO (todos los partes)
+async function ecCargarHistorialCompleto(vehiculoId) {
+  const el=document.getElementById('ec-d-hist');
+  if(!el) return;
+  el.innerHTML='<div style="text-align:center;padding:32px;color:#3a7080"><div class="spinner" style="margin:0 auto 8px"></div></div>';
+
+  const {data}=await db.from('partes_averia')
+    .select('id,numero_parte,titulo,estado,created_at,notas_mecanico,tipo_diag,fotos_reparacion')
+    .eq('vehiculo_id',vehiculoId)
+    .order('created_at',{ascending:false}).limit(50);
+
+  const ids=(data||[]).map(p=>p.id);
+  let repMap={};
+  if(ids.length){
+    const {data:reps}=await db.from('repuestos_parte').select('parte_id,nombre_libre,cantidad,repuestos(nombre)').in('parte_id',ids);
+    (reps||[]).forEach(r=>{if(!repMap[r.parte_id])repMap[r.parte_id]=[];repMap[r.parte_id].push(r);});
+  }
+
+  if(!data?.length){el.innerHTML='<div style="padding:24px;text-align:center;color:#3a7080">Sin historial de partes</div>';return;}
+
+  el.innerHTML=data.map(p=>{
+    const fecha=new Date(p.created_at).toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric'});
+    const col={cerrado:'#7dc520',abierto:'#e05050',en_curso:'#f08030',cerrado_pendiente:'#f0c040',cancelado:'#3a7080'}[p.estado]||'#7ab0b8';
+    const reps=repMap[p.id]||[];
+    const diags=(p.tipo_diag||'').split('|').filter(Boolean);
+    const fotos=p.fotos_reparacion||[];
+    return `<div style="padding:12px;margin-bottom:8px;background:#0d3040;border-radius:8px;border-left:3px solid ${col}">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <span style="font-size:11px;color:#3a7080">${fecha}</span>
+        <span style="font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;color:${col};margin-left:auto">#${p.numero_parte||'—'} · ${p.estado.replace(/_/g,' ').toUpperCase()}</span>
+      </div>
+      <div style="font-size:13px;font-weight:700;color:#d8eef0;margin-bottom:4px">${(p.titulo||'').replace(/\|/g,' · ')}</div>
+      ${diags.length?`<div style="display:flex;flex-wrap:wrap;gap:3px;margin-bottom:4px">${diags.map(t=>`<span style="background:rgba(125,197,32,.1);border:1px solid rgba(125,197,32,.3);border-radius:4px;padding:1px 6px;font-size:10px;font-weight:600;color:#7dc520">${t}</span>`).join('')}</div>`:''}
+      ${p.notas_mecanico?`<div style="font-size:12px;color:#7ab0b8;margin-bottom:4px;line-height:1.4">🔧 ${p.notas_mecanico}</div>`:''}
+      ${reps.length?`<div style="display:flex;flex-wrap:wrap;gap:3px;margin-bottom:4px">${reps.map(r=>`<span style="background:#133a4a;border:1px solid #1a4f62;border-radius:4px;padding:1px 6px;font-size:10px;color:#7ab0b8">🔩 ${r.nombre_libre||r.repuestos?.nombre||'—'} ×${r.cantidad}</span>`).join('')}</div>`:''}
+      ${fotos.length?`<div style="display:flex;gap:4px;flex-wrap:wrap">${fotos.map(url=>`<img src="${url}" style="width:48px;height:48px;object-fit:cover;border-radius:4px;border:1px solid #1a4f62;cursor:pointer" onclick="ecLightbox('${url}')">`).join('')}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function ecBlink() {
+  ecBlinkFiltrar('');
+  document.getElementById('ec-blink-search').value='';
+  openModal('modal-ec-blink');
+}
+function ecBlinkFiltrar(q) {
+  const ql=q.toLowerCase();
+  const lista=EC_BLINK.filter(b=>!ql||b.c.includes(ql)||b.d.toLowerCase().includes(ql)||b.s.toLowerCase().includes(ql));
+  const el=document.getElementById('ec-blink-lista');
+  if(!el) return;
+  el.innerHTML=lista.map(b=>`
+    <div style="padding:12px;background:#0d3040;border-radius:8px;border:1px solid #1a4f62;margin-bottom:8px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+        <span style="font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;color:#7dc520;background:rgba(125,197,32,.1);border:1px solid rgba(125,197,32,.3);border-radius:6px;padding:2px 10px">${b.c}</span>
+        <span style="font-size:13px;font-weight:600;color:#d8eef0">${b.d}</span>
+      </div>
+      <div style="font-size:12px;color:#7ab0b8;line-height:1.5">🔧 ${b.s}</div>
+    </div>`).join('')||'<div style="padding:24px;text-align:center;color:#3a7080">Sin resultados</div>';
+}
+
+var ecAlmData=[];
+async function ecAlmacen() {
+  openModal('modal-ec-alm');
+  document.getElementById('ec-alm-lista').innerHTML='<div style="text-align:center;padding:32px;color:#3a7080"><div class="spinner" style="margin:0 auto 8px"></div></div>';
+  const mid=await ecGetModeloId();
+  const {data:cats}=await db.from('categorias_repuesto').select('id').eq('modelo_id',mid);
+  const catIds=new Set((cats||[]).map(c=>c.id));
+  const {data}=await db.from('repuestos').select('*,categorias_repuesto(nombre)').eq('activo',true).order('nombre');
+  ecAlmData=(data||[]).filter(r=>!r.categoria_id||catIds.has(r.categoria_id));
+  ecAlmRender();
+}
+function ecAlmRender() {
+  const q=(document.getElementById('ec-alm-search')?.value||'').toLowerCase();
+  const lista=ecAlmData.filter(r=>!q||r.nombre.toLowerCase().includes(q));
+  const el=document.getElementById('ec-alm-lista');
+  if(!el) return;
+  if(!lista.length){el.innerHTML='<div style="padding:24px;text-align:center;color:#3a7080">Sin repuestos</div>';return;}
+  el.innerHTML=lista.map(r=>{
+    const agot=(r.stock_actual||0)<=0;
+    const bajo=(r.stock_actual||0)<=(r.stock_minimo||1);
+    const col=agot?'#e05050':bajo?'#f0c040':'#7dc520';
+    return `<div style="display:flex;align-items:center;gap:12px;padding:10px;border-bottom:1px solid #133a4a">
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:600;color:#d8eef0">${r.nombre}</div>
+        <div style="font-size:11px;color:#3a7080">${r.ubicacion_almacen||'—'}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:${col}">${r.stock_actual||0}</div>
+        <div style="font-size:10px;color:#3a7080">${r.unidad||'ud'}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// Asegurar que el botón de Ecarr en el menú funcione
+(function(){
+  var _origNav = window.navTo;
+  window.navTo = function(page){
+    if (typeof _origNav === 'function') _origNav(page);
+    if (page === 'ecarr') setTimeout(loadEcarr, 50);
+  };
+})();
+</script>
